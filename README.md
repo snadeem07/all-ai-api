@@ -65,17 +65,26 @@ cd all-ai-api
 npm install
 ```
 
-3. Start the development server:
+3. (Optional) Set up API keys for live testing:
+```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env and add your API keys
+nano .env  # or use your preferred editor
+```
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
 
-4. Build for production:
+5. Build for production:
 ```bash
 npm run build
 ```
 
-5. Preview production build:
+6. Preview production build:
 ```bash
 npm run preview
 ```
@@ -127,6 +136,84 @@ src/
 2. Click the "Share" button
 3. The URL with your selection is copied to clipboard
 4. Share the link with others to show the same comparison
+
+## API Keys Configuration (Optional)
+
+Currently, the app is a **static comparison tool** that doesn't require API keys. However, if you want to add features like live model testing or real-time queries, here's how to configure API keys securely:
+
+### Development Environment
+
+1. **Create environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Add your API keys to `.env`:**
+   ```env
+   VITE_OPENAI_API_KEY=sk-your-openai-key-here
+   VITE_ANTHROPIC_API_KEY=sk-ant-your-anthropic-key-here
+   VITE_GOOGLE_API_KEY=your-google-api-key-here
+   ```
+
+3. **Access in your code:**
+   ```typescript
+   import { API_CONFIG } from '@/lib/api-config';
+
+   const apiKey = API_CONFIG.openai.apiKey;
+   ```
+
+### Security Best Practices
+
+⚠️ **IMPORTANT SECURITY NOTES:**
+
+1. **Never commit `.env` to version control** - It's already in `.gitignore`
+2. **Use environment variables** - All keys must start with `VITE_` to be accessible
+3. **Production deployment** - For production, use:
+   - Backend API proxy (recommended)
+   - Serverless functions (Vercel, Netlify, CloudFlare Workers)
+   - Environment variables in your hosting platform
+4. **Rate limiting** - Implement rate limiting to prevent abuse
+5. **Key rotation** - Regularly rotate API keys
+
+### Where to Get API Keys
+
+| Provider | Link | Free Tier |
+|----------|------|-----------|
+| **OpenAI** | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | $5 trial credit |
+| **Anthropic** | [console.anthropic.com](https://console.anthropic.com) | $5 trial credit |
+| **Google AI** | [makersuite.google.com](https://makersuite.google.com/app/apikey) | Free tier available |
+| **xAI** | [x.ai/api](https://x.ai/api) | Requires X Premium |
+| **DeepSeek** | [platform.deepseek.com](https://platform.deepseek.com) | Free tier |
+| **Mistral** | [console.mistral.ai](https://console.mistral.ai) | Trial credits |
+| **Perplexity** | [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api) | Limited free tier |
+
+### Production Deployment
+
+**For production, NEVER expose API keys in the frontend.** Instead:
+
+1. **Use a backend proxy:**
+   ```
+   Frontend → Your Backend API → AI Model API
+   ```
+
+2. **Or use serverless functions:**
+   ```typescript
+   // Example: Vercel serverless function
+   // api/chat.ts
+   export default async function handler(req, res) {
+     const apiKey = process.env.OPENAI_API_KEY; // Server-side only
+     // Make API call here
+   }
+   ```
+
+3. **Set environment variables in your hosting platform:**
+   - **Vercel**: Settings → Environment Variables
+   - **Netlify**: Site Settings → Environment Variables
+   - **CloudFlare Pages**: Settings → Environment Variables
+
+### Example API Service
+
+Check `src/lib/api-service.example.ts` for example implementations of API calls with proper error handling.
 
 ## Model Data
 
